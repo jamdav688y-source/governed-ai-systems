@@ -1,35 +1,162 @@
-# The Ten Principles of Governed Systems
+# The Ten Principles of Governed AI Systems
 
-These are not best practices.
+These principles are not opinions.
 
-They are **survival constraints**.
+They are **derived constraints** from the Governed AI Systems Canon.  
+They exist to make the Canon enforceable in real systems.
 
-Any system that violates them will eventually produce harm.
+Any system that violates one or more of these principles is, by definition, **not governable** and must not be deployed.
 
----
-
-## 1. Authority Must Be Legible
-
-If you cannot point to who owns the outcome, the system is already unsafe.
-
----
-
-## 2. Stop Authority Must Exist
-
-If no human can halt the system, the system is not under control.
+Each principle maps directly to:
+- A design requirement
+- A diagnostic test
+- A deployment gate
+- A failure classification
 
 ---
 
-## 3. Reversibility Must Be Designed
+## Principle 1 — Legible Purpose
 
-If actions cannot be undone, you are gambling with consequences.
+**Every system must have an explicit, human-legible purpose.**
+
+If a system’s objective cannot be stated clearly and bounded precisely, it is not allowed to operate.
+
+- The purpose must be written.
+- The purpose must be reviewable.
+- The purpose must be narrow enough to constrain behavior.
+
+If the system’s behavior cannot be evaluated against a declared purpose, it is ungovernable.
 
 ---
 
-## 4. Responsibility Cannot Be Distributed Away
+## Principle 2 — Bounded Authority
 
-If everyone is responsible, no one is responsible.
+**Every system must have strict, enforced limits on what it is allowed to do.**
 
+- Permissions must be explicit.
+- Capabilities must be constrained.
+- Access must be minimal.
+
+A system that can do more than it is supposed to do is a latent failure.
+
+---
+
+## Principle 3 — Attributable Decisions
+
+**Every significant action must be attributable to a responsible owner.**
+
+- There must be a named human or governing body.
+- Ownership must be continuous, not symbolic.
+- Escalation paths must be defined.
+
+If no one is clearly responsible, the system is already unsafe.
+
+---
+
+## Principle 4 — Detectable Failure
+
+**Every system must be able to signal when it is failing or drifting.**
+
+- Failure modes must be known.
+- Degradation must be observable.
+- Silent failure is forbidden.
+
+If you cannot tell when the system is wrong, you cannot control it.
+
+---
+
+## Principle 5 — Reversible Action
+
+**All actions must be reversible by default.**
+
+- Irreversible actions must be rare.
+- They must be explicitly gated.
+- They must require escalation and confirmation.
+
+A system that can cause irreversible effects casually is not a system. It is a hazard.
+
+---
+
+## Principle 6 — Enforced Stop Authority
+
+**Every system must have a reliable, testable kill mechanism.**
+
+- Stop authority must exist.
+- It must be accessible.
+- It must be exercised in tests.
+- It must work under stress.
+
+A system that cannot be stopped is already out of control.
+
+---
+
+## Principle 7 — Auditable Reasoning
+
+**The system must produce inspectable traces of why it did what it did.**
+
+- Decisions must be reconstructable.
+- Inputs must be knowable.
+- Outputs must be explainable in human terms.
+
+A system that cannot be audited cannot be trusted.
+
+---
+
+## Principle 8 — Known Blast Radius
+
+**The scope of possible damage must be understood in advance.**
+
+- Impact domains must be mapped.
+- Worst-case scenarios must be enumerated.
+- Couplings must be identified.
+
+Unknown blast radius is unmanaged risk.
+
+---
+
+## Principle 9 — Human Override Supremacy
+
+**Human authority must always dominate system authority.**
+
+- Humans must be able to intervene.
+- Humans must be able to block actions.
+- Humans must be able to take control.
+
+Any system that can overrule its operators is not a tool. It is a governance failure.
+
+---
+
+## Principle 10 — Governance Before Capability
+
+**No system may be scaled, accelerated, or expanded before it is governable.**
+
+- Control must precede power.
+- Safety must precede speed.
+- Ownership must precede autonomy.
+
+If governance is added after deployment, it is already too late.
+
+---
+
+# The Enforcement Rule
+
+Failure of **any single principle** is sufficient to block deployment.
+
+These are not guidelines.  
+They are **hard constraints**.
+
+---
+
+# The Diagnostic Mandate
+
+Every real system must be able to answer:
+
+- Which principle does this component satisfy?
+- How is it enforced?
+- How is it tested?
+- What happens when it fails?
+
+If these questions cannot be answered, the system is not allowed to ship.
 ---
 
 ## 5. Incentives Must Be Aligned With Outcomes
