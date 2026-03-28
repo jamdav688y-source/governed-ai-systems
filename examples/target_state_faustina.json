@@ -1,0 +1,52 @@
+{
+  "target_id": "faustina-001",
+  "target_name": "Faustina Awuah",
+  "target_type": "A",
+  "current_stage": "ESCALATE",
+  "signal_score": 0.91,
+  "constraint_detected": "Continuous revalidation collapses under execution speed and scale.",
+  "authority_gap": "Authority is repeatedly re-evaluated but not bound into immutable enforcement at execution time.",
+  "conversion_readiness": 0.87,
+  "response_type": "constraint_acknowledgement",
+  "assigned_agent": "conversion_engine",
+  "next_action": "convert",
+  "ownership_signal_detected": true,
+  "uncertainty_signal_detected": true,
+  "boundary_exposure_detected": true,
+  "classification_confidence": 0.91,
+  "pressure_ceiling": "high",
+  "thread_context": {
+    "primary_platform": "linkedin",
+    "thread_id": "faustina-thread-001",
+    "last_message_id": "faustina-msg-004",
+    "message_count": 4
+  },
+  "history": [
+    {
+      "timestamp": "2026-03-28T14:10:00Z",
+      "stage": "ENTRY",
+      "action": "target_detected",
+      "notes": "High-signal operator discussing scaling failure in governance."
+    },
+    {
+      "timestamp": "2026-03-28T14:18:00Z",
+      "stage": "PROBE",
+      "action": "boundary_probe_sent",
+      "notes": "Introduced artifact-bound authority frame."
+    },
+    {
+      "timestamp": "2026-03-28T14:26:00Z",
+      "stage": "CLASSIFY",
+      "action": "classified_type_A",
+      "notes": "High ownership, real system pressure, unresolved enforcement gap."
+    },
+    {
+      "timestamp": "2026-03-28T14:33:00Z",
+      "stage": "ESCALATE",
+      "action": "conversion_trigger_confirmed",
+      "notes": "Ownership, uncertainty, and boundary exposure all present."
+    }
+  ],
+  "state_version": "1.0",
+  "last_updated": "2026-03-28T14:33:00Z"
+}
