@@ -1,117 +1,88 @@
-# Governed AI Systems
-Control-Plane Architecture for Enforceable AI Decisions
+## Example: Enforced Conversion Decision (Faustina)
+
+This example demonstrates how the system enforces a conversion boundary.
+
+### Input (Observed Interaction)
+
+Target expresses:
+- ownership of a real system  
+- partial uncertainty in safeguards  
+- exposure of a boundary condition  
 
 ---
 
-## Governing Doctrine
+### Intake Output (Normalized State)
 
-Most systems describe how decisions are made.
-
-Production systems reveal where decisions can be stopped.
-
-> Governance exists only at the boundary where decisions become irreversible.
-
-If execution outruns interruption, control is decorative.
+- AMO created  
+- Target state initialized  
+- Thread context bound  
 
 ---
 
-## System Objective
+### Classification Output
 
-Convert AI interaction systems from:
-
-- non-deterministic
-- non-replayable
-- non-auditable
-
-into systems that are:
-
-- stateful
-- constrained
-- replayable
-- enforceable at runtime
+- signal_score: 0.91  
+- ownership_signal: true  
+- uncertainty_signal: true  
+- boundary_exposure: true  
+- classification: Type A  
 
 ---
 
-## Minimum Survivable Governance Kernel (MSGK)
+### Contract Evaluation
 
-No irreversible action proceeds unless:
+contracts/interaction_rules.yaml requires:
 
-1. Downside ownership is assigned  
-2. Stop authority is enforceable in-loop  
-3. Rollback conditions are defined  
+- ownership_signal_detected = true  
+- uncertainty_signal_detected = true  
+- boundary_exposure_detected = true  
 
-Failure of any condition blocks execution.
-
----
-
-## System Layers (Authoritative)
-
-Each layer has a single responsibility. No overlap.
-
-### 1. Doctrine
-**Location:** `README.md`
-
-Defines:
-- irreversibility boundary
-- control-plane assumptions
-- enforcement philosophy
+All conditions satisfied.
 
 ---
 
-### 2. Protocols
-**Location:** `protocols/`
+### Decision
 
-Defines allowed behavior:
-
-- interaction stages: entry → probe → classify → escalate → convert → exit  
-- agent roles and transitions  
-
-> Protocols define what *may happen*
+Conversion: **ALLOWED**
 
 ---
 
-### 3. Schemas
-**Location:** `schemas/`
+### Counterfactual (Failure Case)
 
-Defines machine-valid structure:
+If:
 
-- `agent_message.schema.json` → Atomic Message Object (AMO)  
-- `classification.schema.json` → target typing + routing  
-- `target_state.schema.json` → persistent state  
+- uncertainty_signal_detected = false  
 
-Invariant:
+Then:
 
-> No interaction exists outside a valid schema.
+Conversion: **BLOCKED**
 
----
-
-### 4. Contracts
-**Location:** `contracts/`
-
-Defines enforcement:
-
-- `interaction_rules.yaml` → stage gating, transition rules  
-- `scoring_policy.yaml` → weighting, thresholds, ranking  
-
-Critical rule:
-
-> Scoring suggests. Contracts decide.
-
-No action executes without contract satisfaction.
+Reason:
+Missing trigger condition → contract violation
 
 ---
 
-### 5. Workflows
-**Location:** `workflows/n8n/`
+### Invariant Demonstrated
 
-Implements runtime behavior:
+> No conversion score may override missing trigger conditions.
 
-- `intake.json` → normalize input → create AMO + target state  
-- `classifier.json` → score + classify + route  
-- `conversion_trigger.json` → enforce conversion admissibility  
+This example shows:
 
-> Workflows execute only what contracts allow.
+- scoring does not control execution  
+- contracts enforce admissibility  
+- the system prevents premature conversion  
 
 ---
 
-## Execution Flow
+### What This Proves
+
+The system does not:
+
+- react to perceived intent  
+- optimize for engagement  
+
+It:
+
+- enforces decision boundaries  
+- blocks invalid transitions  
+- allows only contract-valid execution
