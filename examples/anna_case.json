@@ -1,0 +1,21 @@
+{
+  "target_name": "Anna Baar",
+  "target_type": "B",
+  "interaction_stage": "PROBE",
+  "classification": {
+    "signal_depth": "high",
+    "constraint_awareness": "medium",
+    "ownership_pressure": "low",
+    "classification_confidence": 0.84,
+    "recommended_route": "pressure_injector",
+    "response_mode": "destabilize",
+    "core_constraint": "decision boundaries are articulated but runtime enforcement mechanics remain underspecified",
+    "authority_gap": "authority is described at governance level but not bound to execution instance",
+    "boundary_exposure": true,
+    "ownership_signal_detected": false,
+    "uncertainty_signal_detected": false,
+    "diagnostic_readiness_score": 32
+  },
+  "recommended_message": "Anna — your framing on the decision boundary gap is sharp, especially the point about governance breaking across context shifts rather than within a single system. The place I keep seeing this still fail is that even when decision boundaries are defined, they’re not actually enforced at the moment of execution. So systems end up checking admissibility across context, but not binding authority to the specific execution instance. The gap becomes less about defining boundaries, and more about whether authority is ever made non-interpretable once execution begins. Curious how you’re thinking about that layer—where admissibility stops being evaluated and starts being enforced in a way the system can’t route around.",
+  "next_action": "push"
+}
