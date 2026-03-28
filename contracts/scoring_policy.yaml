@@ -1,0 +1,169 @@
+version: "1.0"
+
+system_name: "Governed AI Systems"
+policy_name: "scoring_policy"
+
+scoring_ranges:
+  normalized_min: 0.0
+  normalized_max: 1.0
+  percentage_min: 0
+  percentage_max: 100
+
+signal_score:
+  description: "Measures overall interaction quality and strategic value."
+  weights:
+    signal_depth:
+      low: 0.25
+      medium: 0.60
+      high: 0.90
+    constraint_awareness:
+      low: 0.20
+      medium: 0.55
+      high: 0.90
+    ownership_pressure:
+      low: 0.15
+      medium: 0.55
+      high: 0.95
+    boundary_exposure_detected: 0.10
+  formula: |
+    base = (
+      signal_depth_weight * 0.35 +
+      constraint_awareness_weight * 0.35 +
+      ownership_pressure_weight * 0.20 +
+      boundary_exposure_bonus * 0.10
+    )
+    signal_score = min(max(base, 0.0), 1.0)
+
+classification_confidence:
+  description: "Measures certainty that the assigned target type and route are correct."
+  thresholds:
+    low_confidence_max: 0.54
+    review_band_min: 0.55
+    review_band_max: 0.69
+    valid_classification_min: 0.70
+    strong_classification_min: 0.85
+  actions:
+    below_review_band: "hold_for_more_signal"
+    review_band: "manual_or_secondary_pass"
+    valid_classification: "allow_stage_progression"
+    strong_classification: "allow_direct_routing"
+
+conversion_readiness:
+  description: "Measures whether a target is ready for a bounded offer."
+  weights:
+    ownership_signal_detected: 0.30
+    uncertainty_signal_detected: 0.25
+    boundary_exposure_detected: 0.25
+    signal_score: 0.10
+    classification_confidence: 0.10
+  formula: |
+    conversion_readiness =
+      ownership_signal_value * 0.30 +
+      uncertainty_signal_value * 0.25 +
+      boundary_exposure_value * 0.25 +
+      signal_score * 0.10 +
+      classification_confidence * 0.10
+  thresholds:
+    blocked_max: 0.49
+    warming_band_min: 0.50
+    warming_band_max: 0.71
+    conversion_eligible_min: 0.72
+    high_priority_conversion_min: 0.85
+
+response_scoring:
+  description: "Maps response behavior to routing pressure."
+  response_type_weights:
+    ownership: 0.95
+    conversion_interest: 1.00
+    constraint_acknowledgement: 0.75
+    peer_alignment: 0.65
+    strategic_founder: 0.60
+    curiosity: 0.40
+    defense: 0.35
+    noise: 0.05
+    none: 0.00
+
+escalation_logic:
+  description: "Determines when escalation is justified."
+  escalation_score_formula: |
+    escalation_score =
+      signal_score * 0.30 +
+      classification_confidence * 0.20 +
+      constraint_acknowledgement_weight * 0.20 +
+      boundary_exposure_value * 0.15 +
+      uncertainty_signal_value * 0.15
+  thresholds:
+    do_not_escalate_max: 0.44
+    cautious_escalation_min: 0.45
+    cautious_escalation_max: 0.64
+    valid_escalation_min: 0.65
+    strong_escalation_min: 0.80
+  rules:
+    - "Never escalate after signal collapse."
+    - "Never escalate if topic drift is detected."
+    - "Never escalate if target repeats defense without new structure twice."
+
+de_escalation_logic:
+  description: "Determines when pressure should be reduced or halted."
+  triggers:
+    silence_after_attempts: 2
+    repeated_generic_responses: 2
+    repeated_defense_without_new_structure: 2
+    topic_drift_detected: true
+    signal_drop_threshold: 0.20
+  actions:
+    silence: "exit"
+    generic_repetition: "hold"
+    repeated_defense: "hold"
+    topic_drift: "exit"
+    severe_signal_drop: "exit"
+
+priority_routing:
+  description: "Ranks targets for operator attention."
+  score_formula: |
+    priority_score =
+      signal_score * 0.35 +
+      conversion_readiness * 0.35 +
+      classification_confidence * 0.15 +
+      response_type_weight * 0.15
+  thresholds:
+    low_priority_max: 0.39
+    medium_priority_min: 0.40
+    medium_priority_max: 0.69
+    high_priority_min: 0.70
+    critical_priority_min: 0.85
+  actions:
+    low_priority: "archive_or_filter"
+    medium_priority: "monitor_or_shape"
+    high_priority: "active_handling"
+    critical_priority: "immediate_attention"
+
+type_adjustments:
+  A:
+    signal_score_multiplier: 1.05
+    conversion_readiness_multiplier: 1.10
+    escalation_bias: 0.10
+  B:
+    signal_score_multiplier: 1.00
+    conversion_readiness_multiplier: 0.75
+    escalation_bias: 0.00
+  C:
+    signal_score_multiplier: 0.95
+    conversion_readiness_multiplier: 0.85
+    escalation_bias: -0.05
+  D:
+    signal_score_multiplier: 0.70
+    conversion_readiness_multiplier: 0.40
+    escalation_bias: -0.10
+  E:
+    signal_score_multiplier: 0.20
+    conversion_readiness_multiplier: 0.10
+    escalation_bias: -0.20
+
+teaching_engine_alignment:
+  purpose: "Preserve lossless governance-birthed decision physics through scored, replayable, optimizable target progression."
+  invariants:
+    - "No ranking without replayable evidence."
+    - "No optimization without state continuity."
+    - "No conversion score may override missing trigger conditions."
+    - "Scoring informs action; contracts authorize action."
