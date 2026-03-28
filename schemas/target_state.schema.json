@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Target State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "target_id",
+    "target_name",
+    "target_type",
+    "current_stage",
+    "signal_score",
+    "constraint_detected",
+    "authority_gap",
+    "conversion_readiness",
+    "response_type",
+    "assigned_agent",
+    "next_action",
+    "state_version",
+    "last_updated"
+  ],
+  "properties": {
+    "target_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_type": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "E"]
+    },
+    "current_stage": {
+      "type": "string",
+      "enum": ["ENTRY", "PROBE", "CLASSIFY", "ESCALATE", "CONVERT", "EXIT"]
+    },
+    "signal_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "constraint_detected": {
+      "type": "string"
+    },
+    "authority_gap": {
+      "type": "string
