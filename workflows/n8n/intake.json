@@ -1,0 +1,110 @@
+{
+  "name": "IACP Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "iacp-intake",
+        "httpMethod": "POST",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-intake",
+      "name": "Webhook Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst now = new Date().toISOString();\n\nconst targetName = body.target_name || body.targetName || 'unknown-target';\nconst threadId = body.thread_id || body.threadId || `thread-${Date.now()}`;\nconst sourcePlatform = body.source_platform || body.sourcePlatform || 'manual';\nconst rawText = body.raw_text || body.rawText || '';\nconst messageId = body.message_id || body.messageId || `msg-${Date.now()}`;\n\nreturn [\n  {\n    json: {\n      intake_timestamp: now,\n      target_name: targetName,\n      thread_id: threadId,\n      source_platform: sourcePlatform,\n      raw_text: rawText,\n      message_id: messageId,\n      current_stage: 'ENTRY',\n      state_version: '1.0'\n    }\n  }\n];"
+      },
+      "id": "normalize-input",
+      "name": "Normalize Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $json;\n\nconst amo = {\n  message_id: j.message_id,\n  timestamp: j.intake_timestamp,\n  source_agent: 'signal_hunter',\n  target_agent: 'constraint_mapper',\n  target_entity: {\n    name: j.target_name,\n    type: 'C'\n  },\n  interaction_stage: 'ENTRY',\n  state_snapshot: {\n    signal_strength: 0.5,\n    constraint_detected: '',\n    authority_gap: '',\n    conversion_readiness: 0.0,\n    ownership_signal: false,\n    uncertainty_signal: false,\n    boundary_exposure: false,\n    failure_surface_profile: [],\n    pressure_ceiling: 'low'\n  },\n  action_payload: {\n    message_text: '',\n    intent: 'probe',\n    pressure_type: 'none',\n    expected_response: 'clarification'\n  },\n  classification: {\n    confidence: 0.5,\n    next_best_action: 'hold',\n    response_type: 'none'\n  },\n  handoff_conditions: {\n    if_yes: 'forward_to_constraint_mapper',\n    if_no: 'archive_or_wait',\n    if_ambiguous: 'manual_review'\n  },\n  thread_context: {\n    thread_id: j.thread_id,\n    source_platform: j.source_platform,\n    prior_message_ids: []\n  }\n};\n\nreturn [{ json: { ...j, amo } }];"
+      },
+      "id": "build-amo",
+      "name": "Build Initial AMO",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "",
+        "documentId": ""
+      },
+      "id": "placeholder-store",
+      "name": "Store Placeholder",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"accepted\",\n  \"workflow\": \"IACP Intake\",\n  \"target_name\": $json.target_name,\n  \"thread_id\": $json.thread_id,\n  \"message_id\": $json.message_id,\n  \"current_stage\": $json.current_stage,\n  \"amo_created\": true\n}"
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1080, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Intake": {
+      "main": [
+        [
+          {
+            "node": "Normalize Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Input": {
+      "main": [
+        [
+          {
+            "node": "Build Initial AMO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Initial AMO": {
+      "main": [
+        [
+          {
+            "node": "Store Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Placeholder": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
