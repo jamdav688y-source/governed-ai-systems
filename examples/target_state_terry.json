@@ -1,0 +1,52 @@
+{
+  "target_id": "terry-001",
+  "target_name": "Terry Snyder",
+  "target_type": "B",
+  "current_stage": "ESCALATE",
+  "signal_score": 0.95,
+  "constraint_detected": "Canonical law can become temporally misaligned with execution state under load.",
+  "authority_gap": "Enforcement boundary exists conceptually, but synchronization between law version and commit context remains vulnerable.",
+  "conversion_readiness": 0.24,
+  "response_type": "peer_alignment",
+  "assigned_agent": "architect_intelligence",
+  "next_action": "align",
+  "ownership_signal_detected": false,
+  "uncertainty_signal_detected": false,
+  "boundary_exposure_detected": true,
+  "classification_confidence": 0.95,
+  "pressure_ceiling": "medium",
+  "thread_context": {
+    "primary_platform": "linkedin",
+    "thread_id": "terry-thread-001",
+    "last_message_id": "terry-msg-005",
+    "message_count": 5
+  },
+  "history": [
+    {
+      "timestamp": "2026-03-28T15:30:00Z",
+      "stage": "ENTRY",
+      "action": "target_detected",
+      "notes": "Peer-level architectural operator discussing runtime custody and canonical law."
+    },
+    {
+      "timestamp": "2026-03-28T15:38:00Z",
+      "stage": "PROBE",
+      "action": "constraint_probe_sent",
+      "notes": "Acknowledged enforcement model and introduced temporal synchronization question."
+    },
+    {
+      "timestamp": "2026-03-28T15:46:00Z",
+      "stage": "CLASSIFY",
+      "action": "classified_type_B",
+      "notes": "High conceptual depth, low ownership pressure, collaboration path preferred."
+    },
+    {
+      "timestamp": "2026-03-28T15:54:00Z",
+      "stage": "ESCALATE",
+      "action": "alignment_invariant_injected",
+      "notes": "Injected time-misalignment failure mode without selling."
+    }
+  ],
+  "state_version": "1.0",
+  "last_updated": "2026-03-28T15:54:00Z"
+}
