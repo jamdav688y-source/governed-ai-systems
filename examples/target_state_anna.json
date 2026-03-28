@@ -1,0 +1,40 @@
+{
+  "target_id": "anna-001",
+  "target_name": "Anna Baar",
+  "target_type": "B",
+  "current_stage": "PROBE",
+  "signal_score": 0.84,
+  "constraint_detected": "Decision boundaries are articulated, but runtime enforcement mechanics remain underspecified.",
+  "authority_gap": "Authority is framed conceptually at governance level but not bound to the execution instance.",
+  "conversion_readiness": 0.32,
+  "response_type": "strategic_founder",
+  "assigned_agent": "pressure_injector",
+  "next_action": "destabilize",
+  "ownership_signal_detected": false,
+  "uncertainty_signal_detected": false,
+  "boundary_exposure_detected": true,
+  "classification_confidence": 0.84,
+  "pressure_ceiling": "medium",
+  "thread_context": {
+    "primary_platform": "linkedin",
+    "thread_id": "anna-thread-001",
+    "last_message_id": "anna-msg-002",
+    "message_count": 2
+  },
+  "history": [
+    {
+      "timestamp": "2026-03-28T15:00:00Z",
+      "stage": "ENTRY",
+      "action": "target_detected",
+      "notes": "Founder-level operator selling adjacent governance narrative."
+    },
+    {
+      "timestamp": "2026-03-28T15:09:00Z",
+      "stage": "PROBE",
+      "action": "asymmetry_probe_sent",
+      "notes": "Introduced non-interpretable authority and execution-time binding gap."
+    }
+  ],
+  "state_version": "1.0",
+  "last_updated": "2026-03-28T15:09:00Z"
+}
