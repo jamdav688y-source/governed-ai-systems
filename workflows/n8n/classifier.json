@@ -1,0 +1,127 @@
+{
+  "name": "IACP Classifier",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "iacp-classifier",
+        "httpMethod": "POST",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-classifier",
+      "name": "Webhook Classifier",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\nconst rawText = (body.raw_text || body.rawText || '').toLowerCase();\nconst currentStage = body.current_stage || body.currentStage || 'ENTRY';\nconst targetName = body.target_name || body.targetName || 'unknown-target';\nconst threadId = body.thread_id || body.threadId || `thread-${Date.now()}`;\nconst messageId = body.message_id || body.messageId || `msg-${Date.now()}`;\nconst sourcePlatform = body.source_platform || body.sourcePlatform || 'manual';\n\nreturn [{\n  json: {\n    target_name: targetName,\n    thread_id: threadId,\n    message_id: messageId,\n    source_platform: sourcePlatform,\n    raw_text: rawText,\n    current_stage: currentStage,\n    classification_version: '1.0'\n  }\n}];"
+      },
+      "id": "normalize-classifier-input",
+      "name": "Normalize Classifier Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.raw_text || '';\n\nconst ownershipPatterns = [\n  /\\bour system\\b/, /\\bour team\\b/, /\\bour setup\\b/, /\\bwe\\b/, /\\bin our\\b/, /\\bour pipeline\\b/, /\\bour implementation\\b/\n];\nconst uncertaintyPatterns = [\n  /not sure/, /unclear/, /uncertain/, /we think/, /probably/, /seems/, /still fail/, /still breaks/, /haven't solved/, /hard to/\n];\nconst boundaryPatterns = [\n  /authority drift/, /enforcement gap/, /halt latency/, /execution latency/, /revalidation/, /binding/, /rollback/, /temporal/, /misaligned/, /context reuse/, /interrupt/, /stop authority/\n];\nconst highSignalPatterns = [\n  /runtime/, /execution boundary/, /authority/, /control plane/, /rollback/, /enforcement/, /admissibility/, /state/, /constraint/, /governance/\n];\n\nconst hasMatch = (patterns, input) => patterns.some((r) => r.test(input));\n\nconst ownership = hasMatch(ownershipPatterns, text);\nconst uncertainty = hasMatch(uncertaintyPatterns, text);\nconst boundary = hasMatch(boundaryPatterns, text);\n\nlet signalDepth = 'low';\nconst highSignalHits = highSignalPatterns.filter((r) => r.test(text)).length;\nif (highSignalHits >= 4) signalDepth = 'high';\nelse if (highSignalHits >= 2) signalDepth = 'medium';\n\nlet constraintAwareness = 'low';\nif (boundary && uncertainty) constraintAwareness = 'high';\nelse if (boundary || uncertainty) constraintAwareness = 'medium';\n\nlet ownershipPressure = 'low';\nif (ownership && uncertainty) ownershipPressure = 'high';\nelse if (ownership) ownershipPressure = 'medium';\n\nconst weights = {\n  signalDepth: { low: 0.25, medium: 0.60, high: 0.90 },\n  constraintAwareness: { low: 0.20, medium: 0.55, high: 0.90 },\n  ownershipPressure: { low: 0.15, medium: 0.55, high: 0.95 }\n};\n\nconst signalScore = Math.min(Math.max(\n  weights.signalDepth[signalDepth] * 0.35 +\n  weights.constraintAwareness[constraintAwareness] * 0.35 +\n  weights.ownershipPressure[ownershipPressure] * 0.20 +\n  (boundary ? 0.10 : 0.0),\n0), 1);\n\nconst classificationConfidence = Math.min(Math.max(\n  0.30 +\n  (signalDepth === 'high' ? 0.25 : signalDepth === 'medium' ? 0.15 : 0.05) +\n  (constraintAwareness === 'high' ? 0.20 : constraintAwareness === 'medium' ? 0.10 : 0.00) +\n  (ownership ? 0.10 : 0.00) +\n  (boundary ? 0.10 : 0.00),\n0), 1);\n\nconst conversionReadiness = Math.min(Math.max(\n  (ownership ? 0.30 : 0) +\n  (uncertainty ? 0.25 : 0) +\n  (boundary ? 0.25 : 0) +\n  signalScore * 0.10 +\n  classificationConfidence * 0.10,\n0), 1);\n\nlet targetType = 'E';\nlet responseMode = 'drop';\nlet nextAction = 'drop';\nlet recommendedRoute = 'drop';\nlet pressureCeiling = 'none';\nlet responseType = 'noise';\n\nif (signalDepth === 'high' && constraintAwareness === 'high' && ownershipPressure === 'high') {\n  targetType = 'A';\n  responseMode = 'convert';\n  nextAction = conversionReadiness >= 0.72 ? 'convert' : 'push';\n  recommendedRoute = 'conversion_engine';\n  pressureCeiling = 'high';\n  responseType = ownership && uncertainty ? 'ownership' : 'constraint_acknowledgement';\n} else if (signalDepth === 'high' && (constraintAwareness === 'high' || constraintAwareness === 'medium')) {\n  targetType = 'B';\n  responseMode = ownership ? 'align' : 'align';\n  nextAction = ownership ? 'push' : 'align';\n  recommendedRoute = 'architect_intelligence';\n  pressureCeiling = 'medium';\n  responseType = ownership ? 'constraint_acknowledgement' : 'peer_alignment';\n} else if ((signalDepth === 'medium' || constraintAwareness === 'high') && (boundary || uncertainty)) {\n  targetType = 'C';\n  responseMode = 'shape';\n  nextAction = 'shape';\n  recommendedRoute = 'dialogue_executor';\n  pressureCeiling = 'medium';\n  responseType = 'constraint_acknowledgement';\n} else if (signalDepth !== 'low' || ownership || uncertainty) {\n  targetType = 'D';\n  responseMode = 'hold';\n  nextAction = 'hold';\n  recommendedRoute = 'filter';\n  pressureCeiling = 'low';\n  responseType = 'curiosity';\n}\n\nconst constraintDetected = boundary\n  ? 'Boundary or enforcement-related failure surface detected.'\n  : uncertainty\n    ? 'Uncertainty present without explicit boundary language.'\n    : 'No meaningful structural constraint detected.';\n\nconst authorityGap = boundary\n  ? 'Authority, enforcement, or interruption boundary appears underspecified.'\n  : 'Authority gap not yet localized.';\n\nreturn [{\n  json: {\n    ...$json,\n    signals: {\n      ownership_signal_detected: ownership,\n      uncertainty_signal_detected: uncertainty,\n      boundary_exposure_detected: boundary\n    },\n    scores: {\n      signal_score: Number(signalScore.toFixed(2)),\n      classification_confidence: Number(classificationConfidence.toFixed(2)),\n      conversion_readiness: Number(conversionReadiness.toFixed(2))\n    },\n    classification_result: {\n      target_name: $json.target_name,\n      target_type: targetType,\n      signal_depth: signalDepth,\n      constraint_awareness: constraintAwareness,\n      ownership_pressure: ownershipPressure,\n      classification_confidence: Number(classificationConfidence.toFixed(2)),\n      recommended_route: recommendedRoute,\n      response_mode: responseMode,\n      core_constraint: constraintDetected,\n      authority_gap: authorityGap,\n      boundary_exposure: boundary,\n      ownership_signal_detected: ownership,\n      uncertainty_signal_detected: uncertainty,\n      diagnostic_readiness_score: Math.round(conversionReadiness * 100),\n      notes: [\n        `High-signal keyword hits: ${highSignalHits}`,\n        `Ownership signal: ${ownership}`,\n        `Uncertainty signal: ${uncertainty}`,\n        `Boundary exposure: ${boundary}`\n      ]\n    },\n    target_state: {\n      target_id: `${$json.target_name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,\n      target_name: $json.target_name,\n      target_type: targetType,\n      current_stage: 'CLASSIFY',\n      signal_score: Number(signalScore.toFixed(2)),\n      constraint_detected: constraintDetected,\n      authority_gap: authorityGap,\n      conversion_readiness: Number(conversionReadiness.toFixed(2)),\n      response_type: responseType,\n      assigned_agent: recommendedRoute,\n      next_action: nextAction,\n      ownership_signal_detected: ownership,\n      uncertainty_signal_detected: uncertainty,\n      boundary_exposure_detected: boundary,\n      classification_confidence: Number(classificationConfidence.toFixed(2)),\n      pressure_ceiling: pressureCeiling,\n      thread_context: {\n        primary_platform: $json.source_platform,\n        thread_id: $json.thread_id,\n        last_message_id: $json.message_id,\n        message_count: 1\n      },\n      history: [\n        {\n          timestamp: new Date().toISOString(),\n          stage: 'CLASSIFY',\n          action: `classified_type_${targetType}`,\n          notes: `Route=${recommendedRoute}; next_action=${nextAction}`\n        }\n      ],\n      state_version: '1.0',\n      last_updated: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "score-and-classify",
+      "name": "Score and Classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $json.classification_result;\nconst s = $json.scores;\n\nconst summary = {\n  target_name: r.target_name,\n  target_type: r.target_type,\n  signal_score: s.signal_score,\n  classification_confidence: s.classification_confidence,\n  conversion_readiness: s.conversion_readiness,\n  recommended_route: r.recommended_route,\n  next_action: $json.target_state.next_action,\n  conversion_blocked: !( $json.signals.ownership_signal_detected && $json.signals.uncertainty_signal_detected && $json.signals.boundary_exposure_detected )\n};\n\nreturn [{ json: { ...$json, summary } }];"
+      },
+      "id": "build-summary",
+      "name": "Build Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [920, 320]
+    },
+    {
+      "parameters": {},
+      "id": "store-classification-placeholder",
+      "name": "Store Classification Placeholder",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1140, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"classified\",\n  \"workflow\": \"IACP Classifier\",\n  \"target_name\": $json.summary.target_name,\n  \"target_type\": $json.summary.target_type,\n  \"signal_score\": $json.summary.signal_score,\n  \"classification_confidence\": $json.summary.classification_confidence,\n  \"conversion_readiness\": $json.summary.conversion_readiness,\n  \"recommended_route\": $json.summary.recommended_route,\n  \"next_action\": $json.summary.next_action,\n  \"conversion_blocked\": $json.summary.conversion_blocked\n}"
+      },
+      "id": "respond-classifier",
+      "name": "Respond Classifier",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1360, 320]
+    }
+  ],
+  "connections": {
+    "Webhook Classifier": {
+      "main": [
+        [
+          {
+            "node": "Normalize Classifier Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Classifier Input": {
+      "main": [
+        [
+          {
+            "node": "Score and Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score and Classify": {
+      "main": [
+        [
+          {
+            "node": "Build Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Summary": {
+      "main": [
+        [
+          {
+            "node": "Store Classification Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Classification Placeholder": {
+      "main": [
+        [
+          {
+            "node": "Respond Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
