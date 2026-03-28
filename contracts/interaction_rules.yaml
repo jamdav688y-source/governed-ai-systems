@@ -1,0 +1,180 @@
+version: "1.0"
+
+system_name: "Governed AI Systems"
+contract_name: "interaction_rules"
+
+global_rules:
+  - id: GR-001
+    rule: "No agent may hand off raw language without structured state."
+  - id: GR-002
+    rule: "No target may advance stage without validation."
+  - id: GR-003
+    rule: "No conversion may occur without ownership, uncertainty, and boundary exposure."
+  - id: GR-004
+    rule: "No escalation may occur without retained signal."
+  - id: GR-005
+    rule: "No message may be generated without classification."
+  - id: GR-006
+    rule: "All actions must be replayable from stored state."
+  - id: GR-007
+    rule: "No pressure increase is allowed after signal collapse."
+  - id: GR-008
+    rule: "Peer-alignment targets may not receive conversion messaging unless ownership emerges."
+
+stage_machine:
+  stages:
+    - ENTRY
+    - PROBE
+    - CLASSIFY
+    - ESCALATE
+    - CONVERT
+    - EXIT
+
+  transitions:
+    ENTRY:
+      allowed_next: [PROBE, EXIT]
+    PROBE:
+      allowed_next: [CLASSIFY, EXIT]
+    CLASSIFY:
+      allowed_next: [ESCALATE, EXIT]
+    ESCALATE:
+      allowed_next: [CONVERT, PROBE, EXIT]
+    CONVERT:
+      allowed_next: [EXIT, ESCALATE]
+    EXIT:
+      allowed_next: []
+
+classification_thresholds:
+  minimum_signal_strength_for_mapping: 0.55
+  minimum_classification_confidence: 0.70
+  minimum_conversion_readiness: 0.72
+
+response_axes:
+  signal_depth: [low, medium, high]
+  constraint_awareness: [low, medium, high]
+  ownership_pressure: [low, medium, high]
+
+target_types:
+  A:
+    description: "High signal, high constraint awareness, high ownership pressure"
+    default_route: "conversion_engine"
+    response_mode: "convert"
+    pressure_ceiling: "high"
+  B:
+    description: "High signal, high or medium constraint awareness, low ownership pressure"
+    default_route: "architect_intelligence"
+    response_mode: "align"
+    pressure_ceiling: "medium"
+  C:
+    description: "Medium signal, meaningful tension, incomplete structure"
+    default_route: "dialogue_executor"
+    response_mode: "shape"
+    pressure_ceiling: "medium"
+  D:
+    description: "Curious but low ownership and low urgency"
+    default_route: "filter"
+    response_mode: "hold"
+    pressure_ceiling: "low"
+  E:
+    description: "Noise"
+    default_route: "drop"
+    response_mode: "drop"
+    pressure_ceiling: "none"
+
+conversion_trigger:
+  required:
+    ownership_signal: true
+    uncertainty_signal: true
+    boundary_exposure: true
+  interpretation:
+    ownership_signal:
+      - "references their system, team, environment, pipeline, or implementation"
+    uncertainty_signal:
+      - "expresses incomplete confidence, enforcement uncertainty, unresolved implementation, or scaling doubt"
+    boundary_exposure:
+      - "reveals authority drift, enforcement gap, halt/execution mismatch, context reuse failure, or temporal misalignment"
+
+response_types:
+  ownership:
+    next_action: "push"
+  curiosity:
+    next_action: "hold"
+  defense:
+    next_action: "hold"
+  peer_alignment:
+    next_action: "align"
+  strategic_founder:
+    next_action: "destabilize"
+  constraint_acknowledgement:
+    next_action: "shape"
+  conversion_interest:
+    next_action: "convert"
+  noise:
+    next_action: "drop"
+
+pressure_policy:
+  A:
+    allowed_modes: [shape, convert, hold]
+    forbidden_modes: [destabilize]
+  B:
+    allowed_modes: [align, destabilize, hold]
+    forbidden_modes: [convert]
+  C:
+    allowed_modes: [shape, hold]
+    forbidden_modes: [convert]
+  D:
+    allowed_modes: [filter, hold]
+    forbidden_modes: [convert, destabilize]
+  E:
+    allowed_modes: [drop]
+    forbidden_modes: [convert, shape, align, destabilize]
+
+agent_handoffs:
+  - from: "signal_hunter"
+    to: "constraint_mapper"
+    condition: "signal_strength >= minimum_signal_strength_for_mapping"
+
+  - from: "constraint_mapper"
+    to: "classifier_engine"
+    condition: "structural_constraint_detected == true"
+
+  - from: "classifier_engine"
+    to: "dialogue_executor"
+    condition: "classification_confidence >= minimum_classification_confidence"
+
+  - from: "dialogue_executor"
+    to: "pressure_injector"
+    condition: "response_type in ['constraint_acknowledgement', 'defense', 'curiosity']"
+
+  - from: "pressure_injector"
+    to: "conversion_engine"
+    condition: "ownership_signal == true && uncertainty_signal == true && boundary_exposure == true"
+
+  - from: "conversion_engine"
+    to: "authority_core"
+    condition: "conversion_message_sent == true"
+
+de_escalation_rules:
+  silence_after_attempts: 2
+  defense_without_new_structure_attempts: 2
+  actions:
+    silence: "EXIT"
+    repeated_defense: "HOLD"
+    generic_agreement: "HOLD"
+    topic_drift: "EXIT"
+
+validation_requirements:
+  stage_transition_requires_state: true
+  message_generation_requires_classification: true
+  conversion_requires_trigger: true
+  escalation_requires_signal_retention: true
+  all_actions_must_be_replayable: true
+
+teaching_engine:
+  purpose: "Provide lossless governance-birthed decision physics through explicit state, typed transitions, replayability, and enforcement."
+  maximizes:
+    - "decision clarity"
+    - "conversion timing precision"
+    - "cross-thread coherence"
+    - "stateful learning"
+    - "replayable operator judgment"
