@@ -1,0 +1,155 @@
+# governance_kernel.yaml
+version: "1.0"
+artifact_type: "Governance Kernel Specification"
+system_name: "Irreversibility Boundary Control Plane"
+purpose: >
+  Bind governance exactly where consequential decisions transition from reversible possibility
+  to irreversible or hard-to-reverse execution. Designed to prevent capability stacks from
+  degrading into observability-only systems under production pressure.
+
+meta:
+  design_principle:
+    - "Component completeness is not operational control."
+    - "Governance must bind at the commit boundary."
+    - "Interruption must be co-temporal with execution."
+    - "Replay must survive consequence."
+    - "Rollback must be defined before mutation."
+  governing_question: >
+    At the moment a decision becomes executable against live state, who can still stop it,
+    reverse it, and reconstruct it?
+
+planes:
+  data_plane:
+    role: "Carries inputs, memory, retrieval context, telemetry, and state evidence."
+    assets:
+      - prompts
+      - retrieved_documents
+      - embeddings
+      - conversation_memory
+      - telemetry_streams
+      - provenance_records
+    risks:
+      - prompt_injection
+      - retrieval_poisoning
+      - stale_context
+      - provenance_loss
+      - memory_contamination
+    required_controls:
+      - provenance_verification
+      - freshness_validation
+      - source_trust_scoring
+      - immutable_input_snapshotting
+
+  control_plane:
+    role: "Sequences actions, routes tasks, manages escalation, and enforces admissibility gates."
+    assets:
+      - workflow_engine
+      - orchestration_logic
+      - planning_loops
+      - task_router
+      - policy_gateways
+      - guardrail_enforcers
+    risks:
+      - authority_ambiguity
+      - hidden_escalation_paths
+      - completion_bias
+      - non_revalidated_loops
+    required_controls:
+      - explicit_authority_registry
+      - bounded_loop_count
+      - policy_recheck_on_branch_change
+      - stop_channel_isolation
+
+  decision_plane:
+    role: "Transforms informational context into action proposals."
+    assets:
+      - reasoning_engine
+      - policy_interpreter
+      - action_selector
+      - confidence_ranker
+      - escalation_classifier
+    risks:
+      - hallucinated_authority
+      - semantic_drift
+      - policy_misread
+      - overconfident_tool_selection
+    required_controls:
+      - action_attestation
+      - policy_binding_hash
+      - constraint_trace
+      - confidence_thresholds
+      - uncertainty_escalation
+
+  execution_plane:
+    role: "Mutates external state through tool calls, messages, writes, and deployments."
+    assets:
+      - api_calls
+      - database_writes
+      - task_mutations
+      - message_dispatch
+      - deployment_triggers
+    risks:
+      - irreversible_writes
+      - privilege_escalation
+      - propagation_before_review
+      - rollback_failure
+    required_controls:
+      - scoped_credentials
+      - reversible_action_classification
+      - kill_switch
+      - bounded_execution_windows
+      - post_execution_evidence_capture
+
+governance_gates:
+  - gate_id: "G1_pre_decision_admissibility"
+    timing: "before planning"
+    question: "Is the domain, actor, data provenance, and requested intent admissible?"
+    checks:
+      - actor_authorized
+      - source_provenance_valid
+      - policy_scope_valid
+      - task_domain_allowed
+    failure_action: "reject_or_escalate"
+
+  - gate_id: "G2_commit_boundary_revalidation"
+    timing: "immediately before execution"
+    question: "Is the proposed action still allowed under current runtime conditions?"
+    checks:
+      - policy_still_valid
+      - downstream_dependency_state_valid
+      - privilege_scope_still_allowed
+      - reversibility_status_known
+      - stop_authority_live
+    failure_action: "block_commit"
+
+  - gate_id: "G3_in_band_interruption"
+    timing: "during execution"
+    question: "Can stop authority interrupt at or below propagation speed?"
+    checks:
+      - stop_channel_live
+      - halt_latency_leq_execution_latency
+      - interrupt_owner_bound
+      - rollback_path_predeclared
+    failure_action: "fail_closed_or_degrade_mode"
+
+  - gate_id: "G4_post_execution_reconstruction"
+    timing: "after mutation"
+    question: "Can the system prove what happened and recover if needed?"
+    checks:
+      - evidence_bundle_complete
+      - rollback_window_open_or_classified_irreversible
+      - mutation_log_replayable
+      - custody_chain_intact
+    failure_action: "freeze_further_mutation_and_escalate"
+
+authority_topology:
+  decision_authority:
+    owns: ["proposal_generation", "policy-bound action intent"]
+    cannot_own: ["final_stop_authority", "rollback_authority"]
+  execution_authority:
+    owns: ["state_mutation", "tool_dispatch"]
+    constraints:
+      - "must_operate_with_scoped_credentials"
+      - "must_emit_evidence_on_every_mutation"
+  stop_authority:
+    owns: ["interrupt", "pause", "deny_continuation
