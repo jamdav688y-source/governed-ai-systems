@@ -1,117 +1,81 @@
-Governed AI Systems
-
-Control-plane architecture for AI systems that must remain stoppable, reversible, and accountable under execution pressure.
-
-Most AI repositories explain components.
-
-This repository focuses on something else:
-
-who holds authority when an AI system is already running, how continuation becomes admissible, how interruption happens in time, and whether rollback is real or assumed.
+# Governed AI Systems  
+**Control-Plane Architecture for Enforceable AI Execution**
 
 ---
 
-What this repository is for
+## Opening Claim
 
-Governed AI Systems is a practical framework for designing and auditing AI workflows, agents, and automated decision systems that can:
+Most AI systems don’t fail because they make the wrong decision.
 
-- classify
-- route
-- approve
-- notify
-- publish
-- trigger actions
-- mutate downstream state
+They fail because they **continue executing after they’ve lost the authority to act**.
 
-The core concern is not model quality alone.
+At scale, failure is not a model problem.
 
-It is whether a system can continue operating without enforceable authority, timely interruption, rollback viability, or replay-grade evidence.
+It is a **control-plane problem**.
+
+> If interruption is not co-temporal with execution, governance collapses into observation.
 
 ---
 
-Core thesis
+## System Model (Planes)
 
-A system is not governed because it has policies, dashboards, or monitoring.
+AI systems are typically described across three planes:
 
-A system is governed when control remains enforceable at the moment decisions become operational.
-
-That requires:
-
-- explicit decision ownership
-- named stop authority
-- bounded rollback
-- evidence sufficient for reconstruction
-- admissibility checks at the execution boundary
-
-Without those, governance becomes advisory at best and decorative at worst.
+| Plane | Function | Limitation |
+|------|---------|-----------|
+| Data Plane | Execution, transport | No decision control |
+| Management Plane | Monitoring, configuration | Out-of-band authority |
+| AI / Decision Plane | Inference, optimization | No enforcement |
 
 ---
 
-Repository contents
+### What’s Missing: The Control Plane
 
-"doctrine/"
-
-First principles for governed AI systems:
-
-- decision surfaces
-- stop authority
-- rollback viability
-- evidence and replayability
-- governance classification
-
-"doctrine/diagnostics/"
-
-Deployment gates and audit checklists for real systems.
-
-"docs/offers/"
-
-Client-facing commercial packaging for the AI Failure Boundary Audit.
-
-"docs/deliverables/"
-
-Sample delivery artifacts showing what an audit produces.
-
-".github/workflows/"
-
-Governance-oriented CI checks that block merges when required governance artifacts are missing or incomplete.
-
-"scripts/"
-
-Lightweight validation tools used by CI.
+| Capability | Function |
+|-----------|--------|
+| Admissibility | Validate decisions before execution |
+| Enforcement | Apply constraints at runtime |
+| Interruption | Stop execution under load |
+| Rollback | Restore system state |
+| Attestation | Reconstruct decisions |
 
 ---
 
-Getting started
+**Key distinction:**
 
-1. Read the doctrine in "doctrine/README.md"
-2. Review the governance gate in "doctrine/diagnostics/00-governance-gate.md"
-3. Inspect the client offer in "docs/offers/ai-failure-boundary-audit.md"
-4. Review the sample deliverable in "docs/deliverables/sample-client-deliverable.md"
-5. Enable the GitHub Actions workflow in ".github/workflows/governance-ci.yml"
+- Monitoring = visibility  
+- Control = authority  
 
----
-
-Who this is for
-
-This repository is designed for:
-
-- CTOs
-- technical founders
-- platform and infrastructure leads
-- AI product and operations leads
-- teams deploying agentic workflows into live systems
+Most systems have the first.  
+Very few have the second.
 
 ---
 
-Commercial use
+## Minimum Survivable Governance Kernel (MSGK)
 
-This repository also supports a fixed-scope service:
+Every decision must satisfy four conditions:
 
-AI Failure Boundary Audit
+### 1. Downside Custody  
+Who owns failure when it occurs?
 
-A diagnostic engagement for identifying where AI systems can continue executing without clear authority, enforceable stop conditions, rollback viability, or replay-grade evidence.
+### 2. In-Band Stop Authority  
+Can execution be halted during runtime?
+
+### 3. Rollback Viability  
+Can the system return to a valid state?
+
+### 4. Replay-Grade Evidence  
+Can the decision be reconstructed exactly?
 
 ---
 
-License
+If any of these are missing:
 
-MIT
+> The system is operating outside governance.
+
+---
+
+## Decision Lifecycle
+
+```text
+Design → Admissibility → Execution → Propagation → Intervention → Rollback
